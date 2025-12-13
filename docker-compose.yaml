@@ -1,0 +1,62 @@
+version: '3.9'
+
+services:
+  # elasticsearch
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:9.2.2
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - node.name=es01
+      - xpack.security.enabled=false # if use don't use ssl/tls , add this line , if not add this line , show error when test  curl -X GET http://localhost:9200
+      - cluster.name=elk-cluster
+      - ELASTIC_PASSWORD=password
+    volumes:
+      - ./elasticsearch/config/elasticsearch.yaml:/usr/share/elasticsearch/config/elasticsearch.yaml
+      - ./elasticsearch/data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: ["CMD", "curl", "--silent", "--insecure", "-u", "elastic:password", "http://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=50s"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    ports:
+      - "5600:9200"
+    networks:
+      - elk-net
+
+  # logstash
+  logstash:
+    image: docker.elastic.co/logstash/logstash:9.2.2
+    container_name: logstash
+    environment:
+      - ELASTIC_PASSWORD=password
+    volumes:
+      - ./logstash/config/logstash.yaml:/usr/share/logstash/config/logstash.yaml
+      - ./logstash/pipeline:/usr/share/logstash/pipeline
+      - ./app/logs:/usr/share/logstash/logs
+    ports:
+      - "5061:9600"
+    networks:
+      - elk-net
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+
+  # kibana
+  kibana:
+    image: docker.elastic.co/kibana/kibana:9.2.2
+    container_name: kibana
+    environment:
+      - ELASTIC_PASSWORD=password
+    volumes:
+      - ./kibana/config/kibana.yaml:/usr/share/kibana/config/kibana.yaml
+    ports:
+      - "5602:5601"
+    networks:
+      - elk-net
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+networks:
+  elk-net:
+    driver: bridge

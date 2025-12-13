@@ -1,0 +1,10 @@
+server:
+  port: 8081
+spring:
+  application:
+    name: pos-logging-service
+logging:
+  level:
+    root: INFO
+  file:
+    name: ./app/logs/log.log
