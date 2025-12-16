@@ -22,7 +22,7 @@ services:
     ports:
       - "5600:9200"
     networks:
-      - elk-net
+      - elk-kafka-net
 
   # logstash
   logstash:
@@ -32,12 +32,13 @@ services:
       - ELASTIC_PASSWORD=password
     volumes:
       - ./logstash/config/logstash.yaml:/usr/share/logstash/config/logstash.yaml
+      - ./logstash/config/pipeline.yaml:/usr/share/logstash/config/pipeline.yaml
       - ./logstash/pipeline:/usr/share/logstash/pipeline
       - ./app/logs:/usr/share/logstash/logs
     ports:
       - "5061:9600"
     networks:
-      - elk-net
+      - elk-kafka-net
     depends_on:
       elasticsearch:
         condition: service_healthy
@@ -53,7 +54,7 @@ services:
     ports:
       - "5602:5601"
     networks:
-      - elk-net
+      - elk-kafka-net
     depends_on:
       elasticsearch:
         condition: service_healthy
@@ -64,7 +65,7 @@ services:
     hostname: kafka
     container_name: kafka
     networks:
-      - kafka-net
+      - elk-kafka-net
     ports:
       - "9092:9092"
       - "9093:9093"
@@ -96,11 +97,11 @@ services:
     depends_on:
       - kafka
     networks:
-      - kafka-net
+      - elk-kafka-net
 networks:
-  elk-net:
+  elk-kafka-net:
     driver: bridge
-  kafka-net:
-    driver: bridge
+#  kafka-net:
+#    driver: bridge
 volumes:
   kafka_data:
