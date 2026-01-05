@@ -33,7 +33,17 @@ Logstash processes and transforms the logs as needed.
 Logstash outputs the structured data to Elasticsearch for indexing and searching.
 Kibana is used for visualization and analysis.
 
-# PORTS
+## Kafka topic strategy
+```
+<env>.<service>-logs
+```
+**Examples**
+- dev.mail-service-logs
+- prod.mail-service-logs
+- staging.payment-service-logs
+
+
+## PORTS
 -  **Spring Web Server Port: ``8081``**
 -  **Elasticsearch: ``5600``**
 -  **Logstash     : ``5601``**

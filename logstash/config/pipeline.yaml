@@ -1,4 +1,4 @@
 - pipeline.id: kafka_to_elasticsearch
   path.config: "/usr/share/logstash/pipeline/logstash-kafka.conf"
-- pipeline.id: file_to_elasticsearch
-  path.config: "/usr/share/logstash/pipeline/logstash.conf"
+#- pipeline.id: file_to_elasticsearch
+#  path.config: "/usr/share/logstash/pipeline/logstash.conf"
